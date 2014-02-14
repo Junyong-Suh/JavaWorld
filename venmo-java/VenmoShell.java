@@ -174,7 +174,7 @@ public class VenmoShell {
 		}
 
 		// create the card and assign to the user
-		Card c = new Card(cardNumber);
+		Card c = new Card(cardNumber, u.getUserName());
 		venmoCards.put(cardNumber, c);
 		u.addCard(c);
 		System.out.println("Card \""+ cardNumber +"\" is added to user \""+ userName +"\".");

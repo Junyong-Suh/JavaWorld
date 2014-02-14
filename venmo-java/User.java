@@ -13,6 +13,10 @@ public class User {
 		card = null;
 	}
 
+	public String getUserName() {
+		return userName;
+	}
+
 	public void addCard(Card c) {
 		card = c;
 	}

@@ -1,8 +1,10 @@
 public class Card {
 	private String cardNumber;
+	private String userName;
 
-	public Card(String cardNumber) {
+	public Card(String cardNumber, String userName) {
 		this.cardNumber = cardNumber;
+		this.userName = userName;
 	}
 
 	static private boolean luhn_10_validation(String cardNumber) {
