@@ -10,10 +10,15 @@
 	b. execute the output (ex. java miniVenmo)
 	c. clean beforehand if needed (ex. make clean)
 	d. the program expects either zero or one arguments
+	    1. no argument will execute the program as interactive mode
+	    2. one argument will execute the program as batch mode, which will read that argument as a file name to read
+    e. 'java miniVenmo test' will read test cases and execute
 
 2. Design decisions
-	-- to be updated
+	Used HashMap for Users and Cards info to keep track of them and their unique existence
+	Used Factory Pattern to extend card issue process for other types of cards
+	Used BigDecimal type for balance to avoid overflow
 
 3. The language I chose and why I chose it
-	a. Java provides useful Data Structure Classes
-	b. Java has handy String / Array realted methods (startsWith, contains, split ...)
+	a. Java provides useful Data Structure classes
+	b. Java has handy String / Array related methods

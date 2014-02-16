@@ -40,10 +40,6 @@ JC = javac
 
 CLASSES = \
 	miniVenmo.java \
-	# Blah.java \
-	# Library.java \
-	# Main.java 
-
 
 #
 # the default make target entry

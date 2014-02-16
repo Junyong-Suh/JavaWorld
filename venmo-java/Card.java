@@ -1,45 +1,34 @@
-public class Card {
+/**
+ * Abstract class Card
+ */
+public abstract class Card {
 	private String cardNumber;
 	private String userName;
+	private CardType cardType;
 
-	public Card(String cardNumber, String userName) {
+	public Card(String cardNumber, String userName, CardType cardType) {
 		this.cardNumber = cardNumber;
 		this.userName = userName;
+		this.cardType = cardType;
 	}
 
-	static private boolean luhn_10_validation(String cardNumber) {
-		int n = 0;
-		int sum = 0;
-
-		// LUHN-10 Error Dection Algorithm (http://www.ee.unb.ca/cgi-bin/tervo/luhn.pl)
-		for (int i = 0; i < cardNumber.length(); i++) {
-			n = Character.getNumericValue(cardNumber.charAt(i));
-			if (i % 2 == 0) {
-				n = n * 2;
-				if (n > 9) {
-					n = 1 + (n % 10);
-				}
-			}
-			sum = sum + n;
-		}
-
-		return (sum % 10 == 0);
+	public String getCardNumber() {
+        return this.cardNumber;
 	}
 
-	static public boolean isCardNumberValid(String cardNumber) {
-		// Assumption: Credit card numbers will always be numeric.
-		// Credit card numbers may vary in length, up to 19 characters.
+	public String getUserName() {
+		return this.userName;
+	}
 
-		if (19 < cardNumber.length()) {
-			System.out.println("ERROR: credit card numbers should be less than 19 characters.");
-			return false;
-		}
+	public CardType getCardType() {
+        return this.cardType;
+	}
 
-		if (!luhn_10_validation(cardNumber)) {
-			System.out.println("ERROR: this card is invalid.");
-			return false;
-		}
-
-		return true;
-	}	
+    /**
+     * Any card-specific validation should be in this method
+     *
+     * @param cardNumber - card number
+     * @return boolean true if valid, false otherwise
+     */
+	protected abstract boolean validate(String cardNumber);
 }

@@ -1,5 +1,9 @@
 import java.util.regex.Pattern;
 
+/**
+ * Class User
+ *
+ */
 public class User {
 	private Balance balance;
 	private StringBuilder feed;
@@ -14,7 +18,7 @@ public class User {
 	}
 
 	public String getUserName() {
-		return userName;
+        return userName;
 	}
 
 	public void addCard(Card c) {
@@ -33,6 +37,14 @@ public class User {
 		}
 	}
 
+    /**
+     * Append transaction history to the feed
+     *
+     * @param actor - user that pays
+     * @param target - user that gets paid
+     * @param amounts - amount of money
+     * @param notes - notes :)
+     */
 	public void appendToFeed(String actor, String target, String amounts, String[] notes) {
 		feed.append(actor).append(" paid ").append(target).append(" "+ amounts).append(" for ");
 		for (int i = 0; i < notes.length; i++) {
@@ -45,6 +57,11 @@ public class User {
 		return feed.toString();
 	}
 
+    /**
+     * add balance
+     *
+     * @param amounts - amount of money (e.g. '$100.50')
+     */
 	public void addBalance(String amounts) {
 		balance.deposit(amounts);
 	}
@@ -53,6 +70,12 @@ public class User {
 		return balance.getBalance();
 	}
 
+    /**
+     * user name validation
+     *
+     * @param userName - user's name
+     * @return boolean true if valid, false otherwise
+     */
 	static public boolean isValidUserName(String userName) {
 		// User names should be alphanumeric but also allow underscores and dashes.
 		String USER_NAME_REGEX = "[\\w-]*";

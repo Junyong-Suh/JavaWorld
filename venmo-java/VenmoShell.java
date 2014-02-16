@@ -5,6 +5,15 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 
+/**
+ *  VenmoShell Class
+ *
+ *  Supports two modes
+ *      1. interactive mode - command line mode
+ *      2. batch mode - reads a file with new line delimited commands
+ *
+ *  @author junyong
+ */
 public class VenmoShell {
 
 	private final int INTERACTIVE_MODE = 0;
@@ -17,13 +26,11 @@ public class VenmoShell {
 	private HashMap<String, User> venmoUsers = new HashMap<String, User>();
 	private HashMap<String, Card> venmoCards = new HashMap<String, Card>();
 
-	public VenmoShell() {
-		// anything we need to do in the constructor? 
-	}
-
-	/*
-		main method to run the Venmo Shell
-	*/
+    /**
+     * Runs the Venmo Shell
+     *
+     * @param args - arguments
+     */
 	public void run(String[] args) {
 		int argsLength = args.length;
 
@@ -42,7 +49,9 @@ public class VenmoShell {
 		System.out.println("Thanks for using VenmoShell. Bye!");
 	}
 
-	// interactively (from stdin), when run with no arguments
+    /**
+     * Interactive mode that takes each command
+     */
 	private void interactiveShell() {
 		System.out.println("Welcome to VenmoShell. Type 'help' to see instructions, 'quit' or 'exit' to end VenmoShell.");
 
@@ -62,6 +71,11 @@ public class VenmoShell {
 		}
 	}
 
+    /**
+     * Interpret commands and execute appropriate actions
+     *
+     * @param userCommand - space delimited input (e.g. pay <actor> <target> <amount> <note>)
+     */
 	private void interpretCommand(String userCommand) {
 		String[] userCommands = userCommand.split(" ");	// All input is space delimited.
 		// filter empty commands
@@ -100,14 +114,15 @@ public class VenmoShell {
 		}
 	}
 
-	/*
-		"user" will create a new user with a given name.
-		e.g., user <user>
-
-		User names should be alphanumeric but also allow underscores and dashes.
-		User names should be no shorter than 4 characters but no longer than 15.
-		Users start with a balance of $0.
-	*/
+    /**
+     * "user" will create a new user with a given name. (e.g., user <user>)
+     *
+     *  User names should be alphanumeric but also allow underscores and dashes.
+     *  User names should be no shorter than 4 characters but no longer than 15.
+     *  Users start with a balance of $0.
+     *
+     * @param userCommand - space delimited input (e.g., user <user>)
+     */
 	private void commandUser(String userCommand) {
 		String[] userCommands = userCommand.split(" ");	// All input is space delimited.
 		if (userCommands.length != 2) {
@@ -119,7 +134,7 @@ public class VenmoShell {
 
 		// check if the user exists
 		if (venmoUsers.containsKey(userName)) {
-			System.out.println("ERROR: User with name \""+ userName +"\" already exist. Please choose another name.");
+			System.out.println("ERROR: User name already exist. Please choose another name.");
 			return ;
 		}
 
@@ -129,15 +144,16 @@ public class VenmoShell {
 		}
 	}
 
-	/*
-		"add" will create a new credit card for a given name, card number
-		e.g., add <user> <card_number>
-
-		Card numbers should be validated using Luhn-10.
-		Cards that fail Luhn-10 will display an error.
-		Cards that have already been added will display an error.
-		Users can only have one card. Attempting to add a second valid card will display an error.
-	*/
+    /**
+     * "add" will create a new credit card for a given name, card number (e.g., add <user> <card_number>)
+     *
+     * Card numbers should be validated using Luhn-10.
+     * Cards that fail Luhn-10 will display an error.
+     * Cards that have already been added will display an error.
+     * Users can only have one card. Attempting to add a second valid card will display an error.
+     *
+     * @param userCommand - space delimited input (e.g., add <user> <card_number>)
+     */
 	private void commandAdd(String userCommand) {
 		String[] userCommands = userCommand.split(" ");	// All input is space delimited.
 		if (userCommands.length != 3) {
@@ -155,11 +171,6 @@ public class VenmoShell {
 			return ;
 		}
 
-		// is the card number valid?
-		if (!Card.isCardNumberValid(cardNumber)) {
-			return ;
-		}
-
 		// is the user exist?
 		if (!venmoUsers.containsKey(userName)) {
 			System.out.println("ERROR: User with name \""+ userName +"\" does NOT exist.");
@@ -169,27 +180,32 @@ public class VenmoShell {
 		User u = venmoUsers.get(userName);
 		// the user already has a card?
 		if (u.hasCard()) {
-			System.out.println("ERROR: User \""+ userName +"\" already has a card. Users can only have one card.");
+			System.out.println("ERROR: User \""+ u.getUserName() +"\" already has a card. Users can only have one card.");
 			return ;
 		}
 
 		// create the card and assign to the user
-		Card c = new Card(cardNumber, u.getUserName());
-		venmoCards.put(cardNumber, c);
-		u.addCard(c);
-		System.out.println("Card \""+ cardNumber +"\" is added to user \""+ userName +"\".");
+		try {
+			Card c = CardFactory.issueCard(cardNumber, u.getUserName(), CardType.CREDIT);
+			venmoCards.put(cardNumber, c);
+			u.addCard(c);
+			System.out.println("Card \""+ cardNumber +"\" is added to user \""+ userName +"\".");
+		} catch (CardIssueException cie) {
+			System.out.println("ERROR: Credit card issue failed.");
+		}
 	}
 
-	/*
-		"pay" will create a payment between two users.
-		e.g., pay <actor> <target> <amount> <note>
-
-		<actor> and <target> are usernames that were created in #1
-		Users cannot pay themselves.
-		Payments will always charge the actor's credit card (not decrement their balance).
-		Payments will always increase the target's balance.
-		If the actor user has no credit card, display an error.
-	*/
+    /**
+     * "pay" will create a payment between two users. (e.g., pay <actor> <target> <amount> <note>)
+     *
+     * <actor> and <target> are usernames that were created in 'user'
+     * Users cannot pay themselves.
+     * Payments will always charge the actor's credit card (not decrement their balance).
+     * Payments will always increase the target's balance.
+     * If the actor user has no credit card, display an error.
+     *
+     * @param userCommand - space delimited input (e.g., pay <actor> <target> <amount> <note>)
+     */
 	private void commandPay(String userCommand) {
 		String[] userCommands = userCommand.split(" ");	// All input is space delimited.
 		if (userCommands.length < 5) {
@@ -217,7 +233,7 @@ public class VenmoShell {
 		// the actor has a card?
 		User a = venmoUsers.get(actor);
 		if (!a.hasCard()) {
-			System.out.println("ERROR: User \""+ actor +"\" does NOT have a card.");
+			System.out.println("ERROR: User \""+ a.getUserName() +"\" does NOT have a card.");
 			return ;
 		}
 
@@ -232,13 +248,14 @@ public class VenmoShell {
 		t.addBalance(amounts);
 		t.appendToFeed(actor, "You", amounts, notes);
 
-		System.out.println("User \""+ actor +"\" paid \""+ amounts +"\" to user \""+ target +"\" successfully.");
+		System.out.println("User \""+ a.getUserName() +"\" paid \""+ amounts +"\" to user \""+ t.getUserName() +"\" successfully.");
 	}
 
-	/*
-		"feed" will display a feed of the respective user's payments.
-		e.g., feed <user>
-	*/
+    /**
+     * "feed" will display a feed of the respective user's payments. (e.g., feed <user>)
+     *
+     * @param userCommand - space delimited input (e.g., feed <user>)
+     */
 	private void commandFeed(String userCommand) {
 		String[] userCommands = userCommand.split(" ");	// All input is space delimited.
 		if (userCommands.length != 2) {
@@ -257,10 +274,11 @@ public class VenmoShell {
 		System.out.print(u.getFeed());
 	}
 
-	/*
-		"balance" will display a user's balance
-		e.g. balance <user>
-	*/
+    /**
+     * "balance" will display a user's balance (e.g. balance <user>)
+     *
+     * @param userCommand - space delimited input (e.g. balance <user>)
+     */
 	private void commandBalance(String userCommand) {
 		String[] userCommands = userCommand.split(" ");	// All input is space delimited.
 		if (userCommands.length != 2) {
@@ -279,12 +297,21 @@ public class VenmoShell {
 		System.out.println(u.getBalance());
 	}
 
+    /**
+     * "help" will display all commands
+     */
 	private void commandHelp() {
 		String usage = "\n1. \"user\" will create a new user with a given name. (e.g., user <user>)\n\tUser names should be alphanumeric but also allow underscores and dashes.\n\tUser names should be no shorter than 4 characters but no longer than 15.\n\tUsers start with a balance of $0.\n\t\n2. \"add\" will create a new credit card for a given name, card number (e.g., add <user> <card_number>)\n\tCard numbers should be validated using Luhn-10.\n\tCards that fail Luhn-10 will display an error.\n\tCards that have already been added will display an error.\n\tUsers can only have one card. Attempting to add a second valid card will display an error.\n\t\n3. \"pay\" will create a payment between two users. (e.g., pay <actor> <target> <amount> <note>)\n\t<actor> and <target> are usernames that were created in #1\n\tUsers cannot pay themselves.\n\tPayments will always charge the actor's credit card (not decrement their balance).\n\tPayments will always increase the target's balance.\n\tIf the actor user has no credit card, display an error.\n\t\n4. \"feed\" will display a feed of the respective user's payments. (e.g., feed <user>)\n\t\n5. \"balance\" will display a user's balance (e.g., balance <user>)\n\t\n6. \"help\" will show commands and instructions. (e.g., help)\n\t\n7. \"exit\" or \"quit\" (e.g., exit) will terminate this shell.\n";
 		
 		System.out.println(usage);
 	}
 
+    /**
+     * Reads command from user (stdin)
+     *
+     * @param br - BufferedReader
+     * @return String - command from user (stdin)
+     */
 	private String readCommand(BufferedReader br) {
 		String command = "";
 
@@ -306,8 +333,12 @@ public class VenmoShell {
 		System.out.println("ERROR: command \""+ command +"\" not recognized. Type 'help' for more commands.");
 	}
 
-	// from a file of newline-delimited commands, when provided with one argument 
-	// assuming the argument to be the filename to read
+    /**
+     * from a file of newline-delimited commands, when provided with one argument
+     * assuming the argument to be the filename to read
+     *
+     * @param argument - one argument passed in, consider as a filename
+     */
 	private void batchShell(String argument) {
 		BufferedReader br = null;
 

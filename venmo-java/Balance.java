@@ -22,12 +22,6 @@ public class Balance {
 		balance = result;
 	}
 
-	// public void withdraw(String amounts) {
-	// 	// BigDecimal is immutable so cant set values except in constructor
-	// 	BigDecimal result = balance.subtract(new BigDecimal(amounts));
-	// 	balance = result;
-	// }
-
 	public String getBalance() {
 		// Get a currency formatter for the current locale.
 		NumberFormat fmt = NumberFormat.getCurrencyInstance(locale);
