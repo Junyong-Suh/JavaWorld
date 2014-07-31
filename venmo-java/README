@@ -1,0 +1,19 @@
+/*
+	Mini Venmo
+
+	Author: Junyong Suh (junyongsuh@gmail.com)
+	Last updated: Feb 12, 2014
+*/
+
+1. How to make/run this program
+	a. run Makefile (ex. make)
+	b. execute the output (ex. java miniVenmo)
+	c. clean beforehand if needed (ex. make clean)
+	d. the program expects either zero or one arguments
+
+2. Design decisions
+	-- to be updated
+
+3. The language I chose and why I chose it
+	a. Java provides useful Data Structure Classes
+	b. Java has handy String / Array realted methods (startsWith, contains, split ...)
