@@ -22,7 +22,7 @@ class LongestContigiousSubArray {
 	}
 
 	private static void getLongestContigiousSubArray(int[] array) {
-		int max = 0, currentMax = 0, zCount = 0, oCount = 0, prev = -1;
+		int max = 0, zCount = 0, oCount = 0, prev = -1;
 		int indexStartsFrom = 0;
 		for (int i = 0; i < array.length; i++) {
 			if (array[i] == 0 && prev != 0) {
@@ -38,7 +38,7 @@ class LongestContigiousSubArray {
 			}
 			if ((max < zCount + oCount) && (zCount == oCount)) {
 				max = zCount + oCount;
-				indexStartsFrom = i - max;
+				indexStartsFrom = i - max + 1;
 				// System.out.println("Max is updated to "+ max +" at index "+ i);
 			}
 		}
