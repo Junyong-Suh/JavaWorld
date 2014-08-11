@@ -19,6 +19,10 @@ import java.util.Collections;
 import java.util.Arrays;
 
 class IncreasingMaze {
+	enum Direction {
+		NORTH, EAST, SOUTH, WEST
+	}
+
 	private static int[][] getRandomMatrix(int n) {
 		// to shuffle the maze
 		ArrayList<Integer> l = new ArrayList<Integer>();
@@ -49,7 +53,39 @@ class IncreasingMaze {
 
 	private static void printSequenceOfIncreasingAdjacentSequentialNumbers(int[][] maze) {
 		// look around to see if we can move
-			
+		for (int i = 0; i < maze.length; i++) {
+			for (int j = 0; j < maze[i].length; j++) {
+				if (canMove(maze, i, j, Direction.NORTH)) {
+
+				} 
+				if (canMove(maze, i, j, Direction.EAST)) {
+
+				}
+				if (canMove(maze, i, j, Direction.SOUTH)) {
+
+				}
+				if (canMove(maze, i, j, Direction.WEST)) {
+				
+				}
+			}
+		}			
+	}
+
+	private static boolean canMove(int[][] maze, int row, int column, Direction direction) {
+		switch (direction) {
+			case NORTH:
+				break;
+			case EAST:
+				break;
+			case SOUTH:
+				break;
+			case WEST:
+				break;
+			default:
+				System.err.println("Invalid Direction");
+				return false;
+		}
+		return true;
 	}
 
 	public static void main(String args[]) {
